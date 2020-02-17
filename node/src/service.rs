@@ -30,7 +30,9 @@ macro_rules! new_full_start {
 		let inherent_data_providers = sp_inherents::InherentDataProviders::new();
 
 		let builder = sc_service::ServiceBuilder::new_full::<
-			node_portablegabi_runtime::opaque::Block, node_portablegabi_runtime::RuntimeApi, crate::service::Executor
+			node_portablegabi_runtime::opaque::Block,
+			node_portablegabi_runtime::RuntimeApi,
+			crate::service::Executor,
 		>($config)?
 			.with_select_chain(|_config, backend| {
 				Ok(sc_client::LongestChain::new(backend.clone()))
@@ -59,13 +61,13 @@ macro_rules! new_full_start {
 					inherent_data_providers.clone(),
 				)?;
 
-				import_setup = Some((grandpa_block_import, grandpa_link));
+			import_setup = Some((grandpa_block_import, grandpa_link));
 
-				Ok(import_queue)
-			})?;
+			Ok(import_queue)
+		})?;
 
 		(builder, import_setup, inherent_data_providers)
-	}}
+		}}
 }
 
 /// Builds a new service for a full client.
@@ -79,9 +81,9 @@ pub fn new_full(config: Configuration)
 
 	let (builder, mut import_setup, inherent_data_providers) = new_full_start!(config);
 
-	let (block_import, grandpa_link) =
-		import_setup.take()
-			.expect("Link Half and Block Import are present for Full Services or setup failed before. qed");
+	let (block_import, grandpa_link) = import_setup.take().expect(
+		"Link Half and Block Import are present for Full Services or setup failed before. qed",
+	);
 
 	let service = builder
 		.with_finality_proof_provider(|client, backend| {
@@ -96,7 +98,8 @@ pub fn new_full(config: Configuration)
 			sc_basic_authorship::ProposerFactory::new(service.client(), service.transaction_pool());
 
 		let client = service.client();
-		let select_chain = service.select_chain()
+		let select_chain = service
+			.select_chain()
 			.ok_or(ServiceError::SelectChainRequired)?;
 
 		let can_author_with =
@@ -180,9 +183,7 @@ pub fn new_light(config: Configuration)
 	let inherent_data_providers = InherentDataProviders::new();
 
 	ServiceBuilder::new_light::<Block, RuntimeApi, Executor>(config)?
-		.with_select_chain(|_config, backend| {
-			Ok(LongestChain::new(backend.clone()))
-		})?
+		.with_select_chain(|_config, backend| Ok(LongestChain::new(backend.clone())))?
 		.with_transaction_pool(|config, client, fetcher| {
 			let fetcher = fetcher
 				.ok_or_else(|| "Trying to start light transaction pool without active fetcher")?;

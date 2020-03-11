@@ -75,3 +75,5 @@ cargo run -- \
 ```
 
 Additional CLI usage options are available and may be shown by running `cargo run -- --help`.
+
+![](doc/web3_foundation_grants_badge_black.svg)

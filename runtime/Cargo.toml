@@ -160,7 +160,7 @@ version = "2.0.0"
 
 [dependencies.portablegabi-pallet]
 default-features = false
-path = "../../portablegabi-pallet"
+git = "https://github.com/KILTprotocol/portablegabi-pallet.git"
 
 [features]
 default = ["std"]
@@ -199,6 +199,7 @@ authors = ["KILT <info@kilt.io>"]
 edition = "2018"
 name = "node-portablegabi-runtime"
 version = "0.1.0"
+
 [build-dependencies.wasm-builder-runner]
 git = "https://github.com/paritytech/substrate.git"
 package = "substrate-wasm-builder-runner"

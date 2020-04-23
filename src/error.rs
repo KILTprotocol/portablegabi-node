@@ -16,29 +16,16 @@
 
 // If you feel like getting in touch with us, you can do so at info@botlabs.org
 
-#![warn(missing_docs)]
-#![warn(unused_extern_crates)]
+//! Initialization errors.
 
-#[macro_use]
-extern crate hex_literal;
+use client;
 
-mod chain_spec;
-mod cli;
-mod service;
-
-pub use substrate_cli::{error, IntoExit, VersionInfo};
-
-fn run() -> cli::error::Result<()> {
-	let version = VersionInfo {
-		name: "Portablegabi Node",
-		commit: env!("VERGEN_SHA_SHORT"),
-		version: env!("CARGO_PKG_VERSION"),
-		executable_name: "node",
-		author: "Anonymous",
-		description: "Portablegabi Node",
-		support_url: "support.anonymous.an",
-	};
-	cli::run(::std::env::args(), cli::Exit, version)
+error_chain! {
+	foreign_links {
+		Io(::std::io::Error) #[doc="IO error"];
+		Cli(::clap::Error) #[doc="CLI error"];
+	}
+	links {
+		Client(client::error::Error, client::error::ErrorKind) #[doc="Client error"];
+	}
 }
-
-error_chain::quick_main!(run);

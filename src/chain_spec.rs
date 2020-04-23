@@ -1,18 +1,36 @@
-use grandpa_primitives::AuthorityId as GrandpaId;
+// KILT Blockchain – https://botlabs.org
+// Copyright (C) 2019  BOTLabs GmbH
+
+// The KILT Blockchain is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// The KILT Blockchain is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+// If you feel like getting in touch with us, you can do so at info@botlabs.org
+
+//! KILT chain specification
+
 use node_portablegabi_runtime::{
-	AccountId, AuraConfig, BalancesConfig, GenesisConfig, GrandpaConfig, IndicesConfig, Signature,
-	SudoConfig, SystemConfig, WASM_BINARY,
+	AccountId, BalancesConfig, ConsensusConfig, GenesisConfig, IndicesConfig, SudoConfig,
+	TimestampConfig,
 };
-use sc_service;
-use sp_consensus_aura::sr25519::AuthorityId as AuraId;
-use sp_core::{sr25519, Pair, Public};
-use sp_runtime::traits::{IdentifyAccount, Verify};
+
+use ed25519::Public as AuthorityId;
+use primitives::{ed25519, ed25519 as x25519, Pair};
 
 // Note this is the URL for the telemetry server
 //const STAGING_TELEMETRY_URL: &str = "wss://telemetry.polkadot.io/submit/";
 
-/// Specialized `ChainSpec`. This is a specialization of the general Substrate ChainSpec type.
-pub type ChainSpec = sc_service::ChainSpec<GenesisConfig>;
+/// Specialised `ChainSpec`. This is a specialisation of the general Substrate ChainSpec type.
+pub type ChainSpec = substrate_service::ChainSpec<GenesisConfig>;
 
 /// The chain specification option. This is expected to come in from the CLI and
 /// is little more than one of a number of alternatives which can easily be converted
@@ -22,133 +40,149 @@ pub enum Alternative {
 	/// Whatever the current runtime is, with just Alice as an auth.
 	Development,
 	/// Whatever the current runtime is, with simple Alice/Bob auths.
-	LocalTestnet,
+	KiltTestnet,
+	KiltDevnet,
 }
 
-/// Helper function to generate a crypto pair from seed
-pub fn get_from_seed<TPublic: Public>(seed: &str) -> <TPublic::Pair as Pair>::Public {
-	TPublic::Pair::from_string(&format!("//{}", seed), None)
+fn authority_key(s: &str) -> AuthorityId {
+	ed25519::Pair::from_string(&format!("//{}", s), None)
 		.expect("static values are valid; qed")
 		.public()
 }
 
-type AccountPublic = <Signature as Verify>::Signer;
-
-/// Helper function to generate an account ID from seed
-pub fn get_account_id_from_seed<TPublic: Public>(seed: &str) -> AccountId
-where
-	AccountPublic: From<<TPublic::Pair as Pair>::Public>,
-{
-	AccountPublic::from(get_from_seed::<TPublic>(seed)).into_account()
-}
-
-/// Helper function to generate an authority key for Aura
-pub fn get_authority_keys_from_seed(s: &str) -> (AuraId, GrandpaId) {
-	(get_from_seed::<AuraId>(s), get_from_seed::<GrandpaId>(s))
+fn account_key(s: &str) -> AccountId {
+	x25519::Pair::from_string(&format!("//{}", s), None)
+		.expect("static values are valid; qed")
+		.public()
 }
 
 impl Alternative {
 	/// Get an actual chain config from one of the alternatives.
 	pub(crate) fn load(self) -> Result<ChainSpec, String> {
 		Ok(match self {
-			Alternative::Development => ChainSpec::from_genesis(
-				"Development",
-				"dev",
-				|| {
-					testnet_genesis(
-						vec![get_authority_keys_from_seed("Alice")],
-						get_account_id_from_seed::<sr25519::Public>("Alice"),
-						vec![
-							get_account_id_from_seed::<sr25519::Public>("Alice"),
-							get_account_id_from_seed::<sr25519::Public>("Bob"),
-							get_account_id_from_seed::<sr25519::Public>("Alice//stash"),
-							get_account_id_from_seed::<sr25519::Public>("Bob//stash"),
-						],
-						true,
-					)
-				},
-				vec![],
-				None,
-				None,
-				None,
-				None,
-			),
-			Alternative::LocalTestnet => ChainSpec::from_genesis(
-				"Local Testnet",
-				"local_testnet",
-				|| {
-					testnet_genesis(
-						vec![
-							get_authority_keys_from_seed("Alice"),
-							get_authority_keys_from_seed("Bob"),
-						],
-						get_account_id_from_seed::<sr25519::Public>("Alice"),
-						vec![
-							get_account_id_from_seed::<sr25519::Public>("Alice"),
-							get_account_id_from_seed::<sr25519::Public>("Bob"),
-							get_account_id_from_seed::<sr25519::Public>("Charlie"),
-							get_account_id_from_seed::<sr25519::Public>("Dave"),
-							get_account_id_from_seed::<sr25519::Public>("Eve"),
-							get_account_id_from_seed::<sr25519::Public>("Ferdie"),
-							get_account_id_from_seed::<sr25519::Public>("Alice//stash"),
-							get_account_id_from_seed::<sr25519::Public>("Bob//stash"),
-							get_account_id_from_seed::<sr25519::Public>("Charlie//stash"),
-							get_account_id_from_seed::<sr25519::Public>("Dave//stash"),
-							get_account_id_from_seed::<sr25519::Public>("Eve//stash"),
-							get_account_id_from_seed::<sr25519::Public>("Ferdie//stash"),
-						],
-						true,
-					)
-				},
-				vec![],
-				None,
-				None,
-				None,
-				None,
-			),
+			Alternative::Development => {
+				ChainSpec::from_genesis(
+					"Development",
+					"development",
+					|| {
+						testnet_genesis(
+							vec![authority_key("Alice")],
+							vec![
+					// Dev Faucet account
+					// Seed phrase: "receive clutch item involve chaos clutch furnace arrest claw isolate okay together"
+					x25519::Public::from_raw(hex!("edd46b726279b53ea67dee9eeca1d8193de4d78e7e729a6d11a8dea59905f95e")),
+					account_key("Alice"),
+					account_key("Bob")
+				],
+							account_key("Alice"),
+						)
+					},
+					vec![],
+					None,
+					None,
+					None,
+					None,
+				)
+			}
+			Alternative::KiltTestnet => {
+				ChainSpec::from_genesis(
+					"Testnet",
+					"testnet",
+					|| {
+						testnet_genesis(
+							vec![
+					x25519::Public::from_raw(hex!("58d3bb9e9dd245f3dec8d8fab7b97578c00a10cf3ca9d224caaa46456f91c46c")),
+					x25519::Public::from_raw(hex!("d660b4470a954ecc99496d4e4b012ee9acac3979e403967ef09de20da9bdeb28")),
+					x25519::Public::from_raw(hex!("2ecb6a4ce4d9bc0faab70441f20603fcd443d6d866e97c9e238a2fb3e982ae2f")),
+				],
+							vec![
+					// Testnet Faucet accounts
+					x25519::Public::from_raw(hex!("3ba6e1019a22234a9349eb1d76e02f74fecff31da60a0c8fc1e74a4a3a32b925")),
+					x25519::Public::from_raw(hex!("b7f202703a34a034571696f51e95047417956337c596c889bd4d3c1e162310b6")),
+					x25519::Public::from_raw(hex!("5895c421d0fde063e0758610896453aec306f09081cb2caed9649865728e670a"))
+				],
+							x25519::Public::from_raw(hex!(
+								"58d3bb9e9dd245f3dec8d8fab7b97578c00a10cf3ca9d224caaa46456f91c46c"
+							)),
+						)
+					},
+					vec![],
+					None,
+					None,
+					None,
+					None,
+				)
+			}
+			Alternative::KiltDevnet => {
+				ChainSpec::from_genesis(
+					"Devnet",
+					"devnet",
+					|| {
+						testnet_genesis(
+							// Initial Authorities
+							vec![
+						x25519::Public::from_raw(hex!("d44da634611d9c26837e3b5114a7d460a4cb7d688119739000632ed2d3794ae9")),
+						x25519::Public::from_raw(hex!("06815321f16a5ae0fe246ee19285f8d8858fe60d5c025e060922153fcf8e54f9")),
+						x25519::Public::from_raw(hex!("6d2d775fdc628134e3613a766459ccc57a29fd380cd410c91c6c79bc9c03b344")),
+					],
+							// Endowed Accounts
+							vec![x25519::Public::from_raw(hex!(
+								"d44da634611d9c26837e3b5114a7d460a4cb7d688119739000632ed2d3794ae9"
+							))],
+							// Root
+							x25519::Public::from_raw(hex!(
+								"d44da634611d9c26837e3b5114a7d460a4cb7d688119739000632ed2d3794ae9"
+							)),
+						)
+					},
+					vec![],
+					None,
+					None,
+					None,
+					None,
+				)
+			}
 		})
 	}
 
 	pub(crate) fn from(s: &str) -> Option<Self> {
 		match s {
 			"dev" => Some(Alternative::Development),
-			"" | "local" => Some(Alternative::LocalTestnet),
+			"testnet" => Some(Alternative::KiltTestnet),
+			"devnet" => Some(Alternative::KiltDevnet),
 			_ => None,
 		}
 	}
 }
 
 fn testnet_genesis(
-	initial_authorities: Vec<(AuraId, GrandpaId)>,
-	root_key: AccountId,
+	initial_authorities: Vec<AuthorityId>,
 	endowed_accounts: Vec<AccountId>,
-	_enable_println: bool,
+	root_key: AccountId,
 ) -> GenesisConfig {
 	GenesisConfig {
-		system: Some(SystemConfig {
-			code: WASM_BINARY.to_vec(),
-			changes_trie_config: Default::default(),
+		consensus: Some(ConsensusConfig {
+			code: include_bytes!("../runtime/wasm/target/wasm32-unknown-unknown/release/node_portablegabi_runtime_wasm.compact.wasm").to_vec(),
+			authorities: initial_authorities,
+		}),
+		system: None,
+		timestamp: Some(TimestampConfig {
+			minimum_period: 5, // 10 second block time.
 		}),
 		indices: Some(IndicesConfig {
 			ids: endowed_accounts.clone(),
 		}),
 		balances: Some(BalancesConfig {
-			balances: endowed_accounts
-				.iter()
-				.cloned()
-				.map(|k| (k, 1 << 60))
-				.collect(),
+			transaction_base_fee: 1_000_000,
+			transaction_byte_fee: 0,
+			existential_deposit: 1_000_000,
+			transfer_fee: 0,
+			creation_fee: 0,
+			balances: endowed_accounts.iter().cloned().map(|k|(k, 1 << 60)).collect(),
 			vesting: vec![],
 		}),
-		sudo: Some(SudoConfig { key: root_key }),
-		aura: Some(AuraConfig {
-			authorities: initial_authorities.iter().map(|x| (x.0.clone())).collect(),
-		}),
-		grandpa: Some(GrandpaConfig {
-			authorities: initial_authorities
-				.iter()
-				.map(|x| (x.1.clone(), 1))
-				.collect(),
+		sudo: Some(SudoConfig {
+			key: root_key,
 		}),
 	}
 }

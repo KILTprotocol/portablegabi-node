@@ -1,10 +1,6 @@
 FROM rust as builder
 
-COPY Cargo.* /portablegabi-node/
-COPY *.rs /portablegabi-node/
-COPY ./scripts /portablegabi-node/scripts
-COPY ./src /portablegabi-node/src
-COPY ./runtime/src /portablegabi-node/runtime
+COPY . /portablegabi-node/
 
 WORKDIR /portablegabi-node
 
@@ -15,7 +11,8 @@ RUN apt-get clean && apt-get -y update && \
 	libssl-dev dnsutils \
 	clang
 
-RUN /bin/bash scripts/init.sh
+RUN bash scripts/init.sh
+RUN bash scripts/build.sh
 RUN cargo build --release
 
 # expose node ports

@@ -20,6 +20,7 @@ Initialize your Wasm Build environment:
 Build Wasm and native code:
 
 ```bash
+./scripts/build.sh
 cargo build --release
 ```
 

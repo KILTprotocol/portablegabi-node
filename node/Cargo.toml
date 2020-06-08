@@ -6,73 +6,38 @@ homepage = 'https://kilt.io'
 license = 'Unlicense'
 name = 'node-portablegabi'
 repository = 'https://github.com/KILTprotocol/portablegabi-node'
-version = '0.2.0'
+version = '2.0.0-rc2'
+
+[[bin]]
+name = 'node-portablegabi'
 
 [package.metadata.docs.rs]
 targets = ['x86_64-unknown-linux-gnu']
+
+[build-dependencies]
+substrate-build-script-utils = '2.0.0-rc2'
 
 [dependencies]
 futures = '0.3.4'
 log = '0.4.8'
 structopt = '0.3.8'
+node-portablegabi-runtime = { path = '../runtime', version = '2.0.0-rc2' }
+sc-basic-authorship = '0.8.0-rc2'
+sc-cli = '0.8.0-rc2'
+sc-client-api = '2.0.0-rc2'
+sc-consensus = '0.8.0-rc2'
+sc-consensus-aura = '0.8.0-rc2'
+sc-executor = '0.8.0-rc2'
+sc-finality-grandpa = '0.8.0-rc2'
+sc-network = '0.8.0-rc2'
+sc-service = '0.8.0-rc2'
+sc-transaction-pool = '2.0.0-rc2'
+sp-consensus = '0.8.0-rc2'
+sp-consensus-aura = '0.8.0-rc2'
+sp-core = '2.0.0-rc2'
+sp-finality-grandpa = '2.0.0-rc2'
+sp-inherents = '2.0.0-rc2'
+sp-runtime = '2.0.0-rc2'
+sp-transaction-pool = '2.0.0-rc2'
 
-[dependencies.node-portablegabi-runtime]
-path = '../runtime'
-version = '0.2.0'
 
-[dependencies.sc-basic-authorship]
-version = '0.8.0-alpha.6'
-
-[dependencies.sc-cli]
-version = '0.8.0-alpha.6'
-
-[dependencies.sc-client]
-version = '0.8.0-alpha.6'
-
-[dependencies.sc-client-api]
-version = '2.0.0-alpha.6'
-
-[dependencies.sc-consensus-aura]
-version = '0.8.0-alpha.6'
-
-[dependencies.sc-executor]
-version = '0.8.0-alpha.6'
-
-[dependencies.sc-finality-grandpa]
-version = '0.8.0-alpha.6'
-
-[dependencies.sc-network]
-version = '0.8.0-alpha.6'
-
-[dependencies.sc-service]
-version = '0.8.0-alpha.6'
-
-[dependencies.sc-transaction-pool]
-version = '2.0.0-alpha.6'
-
-[dependencies.sp-consensus]
-version = '0.8.0-alpha.6'
-
-[dependencies.sp-consensus-aura]
-version = '0.8.0-alpha.6'
-
-[dependencies.sp-core]
-version = '2.0.0-alpha.6'
-
-[dependencies.sp-finality-grandpa]
-version = '2.0.0-alpha.6'
-
-[dependencies.sp-inherents]
-version = '2.0.0-alpha.6'
-
-[dependencies.sp-runtime]
-version = '2.0.0-alpha.6'
-
-[dependencies.sp-transaction-pool]
-version = '2.0.0-alpha.6'
-
-[build-dependencies.substrate-build-script-utils]
-version = '2.0.0-alpha.6'
-
-[[bin]]
-name = 'node-portablegabi'

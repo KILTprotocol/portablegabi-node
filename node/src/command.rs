@@ -14,11 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Substrate.  If not, see <http://www.gnu.org/licenses/>.
 
-use crate::chain_spec;
-use crate::cli::Cli;
-use crate::service;
+use crate::{chain_spec, cli::Cli, service};
 use sc_cli::SubstrateCli;
-use sp_consensus_aura::sr25519::AuthorityPair as AuraPair;
 
 impl SubstrateCli for Cli {
 	fn impl_name() -> &'static str {
@@ -42,7 +39,7 @@ impl SubstrateCli for Cli {
 	}
 
 	fn copyright_start_year() -> i32 {
-		2017
+		2019
 	}
 
 	fn executable_name() -> &'static str {
@@ -74,7 +71,7 @@ pub fn run() -> sc_cli::Result<()> {
 			runner.run_node(
 				service::new_light,
 				service::new_full,
-				node_portablegabi_runtime::VERSION
+				node_portablegabi_runtime::VERSION,
 			)
 		}
 	}

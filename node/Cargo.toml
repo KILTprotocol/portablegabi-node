@@ -21,7 +21,7 @@ substrate-build-script-utils = '2.0.0-rc2'
 futures = '0.3.4'
 log = '0.4.8'
 structopt = '0.3.8'
-node-portablegabi-runtime = { path = '../runtime', version = '2.0.0-rc2' }
+node-portablegabi-runtime = { path = '../runtime' }
 sc-basic-authorship = '0.8.0-rc2'
 sc-cli = '0.8.0-rc2'
 sc-client-api = '2.0.0-rc2'

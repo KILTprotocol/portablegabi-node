@@ -3255,7 +3255,7 @@ checksum = "feb3b2b1033b8a60b4da6ee470325f887758c95d5320f52f9ce0df055a55940e"
 [[package]]
 name = "portablegabi-pallet"
 version = "0.2.0"
-source = "git+https://github.com/KILTprotocol/portablegabi-pallet.git?branch=substrate-2.0#8392af54ebbcd0bf363c2043c60c6723c828c997"
+source = "git+https://github.com/KILTprotocol/portablegabi-pallet.git#32191ef31e0552c0ecc2117b3338ff5e57d9f02a"
 dependencies = [
  "frame-support",
  "frame-system",

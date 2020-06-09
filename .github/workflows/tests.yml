@@ -1,13 +1,36 @@
-name: Build and test
+on: [push, pull_request]
 
-on: [push]
+name: format, clippy, test
 
 jobs:
-  build:
+  combo:
+    name: rustfmt + cargo clippy + cargo test
     runs-on: ubuntu-latest
-
     steps:
-      - uses: actions/checkout@v1
-      - uses: icepuma/rust-action@master
+      - name: Checkout sources
+        uses: actions/checkout@v2
+
+      - name: Install nightly toolchain
+        uses: actions-rs/toolchain@v1
         with:
-          args: cargo fmt -- --check && cargo clippy -- -Dwarnings && cargo test
+          profile: minimal
+          toolchain: nightly
+          override: true
+          components: rustfmt, clippy
+
+      - name: Run cargo fmt
+        uses: actions-rs/cargo@v1
+        with:
+          command: fmt
+          args: --all -- --check
+
+      - name: Run cargo clippy
+        uses: actions-rs/cargo@v1
+        with:
+          command: clippy
+          args: -- -D warnings
+
+      - name: Run cargo test
+        uses: actions-rs/cargo@v1
+        with:
+          command: test

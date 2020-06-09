@@ -1,4 +1,4 @@
-on: [push, pull_request]
+on: [push]
 
 name: format, clippy, test
 
@@ -17,6 +17,14 @@ jobs:
           toolchain: nightly
           override: true
           components: rustfmt, clippy
+
+      - name: Add wasm target to toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: nightly
+          override: true
+          target: wasm32-unknown-unknown
 
       - name: Run cargo fmt
         uses: actions-rs/cargo@v1

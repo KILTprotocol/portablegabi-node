@@ -1,10 +1,10 @@
 on: [push]
 
-name: format, clippy, test
+name: Lint and test
 
 jobs:
   combo:
-    name: rustfmt + cargo clippy + cargo test
+    name: CI
     runs-on: ubuntu-latest
     steps:
       - name: Checkout sources
@@ -36,7 +36,6 @@ jobs:
         uses: actions-rs/cargo@v1
         with:
           command: clippy
-          args: -- -D warnings
 
       - name: Run cargo test
         uses: actions-rs/cargo@v1

@@ -1,16 +1,16 @@
 [package]
 authors = ['Parity Technologies <admin@parity.io>']
 edition = '2018'
-name = 'node-portablegabi-runtime-wasm'
+name = 'portablegabi-node-runtime-wasm'
 version = '0.1.0'
 
-[dependencies.node-portablegabi-runtime]
+[dependencies.portablegabi-node-runtime]
 default-features = false
 path = '..'
 
 [features]
 default = []
-std = ['node-portablegabi-runtime/std']
+std = ['portablegabi-node-runtime/std']
 
 [workspace]
 members = []

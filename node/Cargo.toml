@@ -4,12 +4,12 @@ build = 'build.rs'
 edition = '2018'
 homepage = 'https://kilt.io'
 license = 'Unlicense'
-name = 'node-portablegabi'
+name = 'portablegabi-node'
 repository = 'https://github.com/KILTprotocol/portablegabi-node'
 version = '2.0.0-rc3'
 
 [[bin]]
-name = 'node-portablegabi'
+name = 'portablegabi-node'
 
 [package.metadata.docs.rs]
 targets = ['x86_64-unknown-linux-gnu']
@@ -21,7 +21,7 @@ substrate-build-script-utils = '2.0.0-rc3'
 futures = '0.3.4'
 log = '0.4.8'
 structopt = '0.3.8'
-node-portablegabi-runtime = { path = '../runtime' }
+portablegabi-node-runtime = { path = '../runtime' }
 sc-basic-authorship = '0.8.0-rc3'
 sc-cli = '0.8.0-rc3'
 sc-client-api = '2.0.0-rc3'

@@ -30,13 +30,13 @@ cargo build --release
 Purge any existing developer chain state:
 
 ```bash
-./target/release/node-portablegabi purge-chain --dev
+./target/release/portablegabi-node purge-chain --dev
 ```
 
 Start a development chain with:
 
 ```bash
-./target/release/node-portablegabi --dev
+./target/release/portablegabi-node --dev
 ```
 
 Detailed logs may be shown by running the node with the following environment variables set: `RUST_LOG=debug RUST_BACKTRACE=1 cargo run -- --dev`.

@@ -10,7 +10,9 @@ COPY ./runtime/src ./src
 # Copy WASM build crate files
 COPY ./runtime/build.rs ./runtime/wasm/Cargo.lock ./runtime/wasm/Cargo.toml ./wasm/
 COPY ./runtime/wasm/src ./wasm/src
+
 # FIXME: This throws an error that the env variable "OUT_DIR" is not set, see ./runtime/src/lib.rs#L9
+RUN cargo build --release
 
 # this container builds the portablegabi-node binary from source files, the runtime library and the WASM file built previously
 FROM parity/rust-builder:latest AS builder

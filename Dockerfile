@@ -1,39 +1,21 @@
 # the WASM build of the runtime is completely indepedent 
 # we can avoid cache invalidations by running it in an extra container
-FROM rust as builder
+FROM parity/rust-builder:latest AS wasm_builder
 
-# install rust nightly
-RUN rustup update nightly
-
-# install wasm toolchain for polkadot
-RUN rustup target add wasm32-unknown-unknown --toolchain nightly
-
-# Install wasm-gc. It's useful for stripping slimming down wasm binaries.
-# (polkadot)
-RUN cargo +nightly install --git https://github.com/alexcrichton/wasm-gc
-
-# show backtraces
-ENV RUST_BACKTRACE 1
+WORKDIR /runtime
 
 # Copy runtime library files
-COPY ./runtime/Cargo.lock ./runtime/Cargo.toml ./runtime/
-COPY ./runtime/src ./runtime/src
+COPY ./runtime/Cargo.lock ./runtime/Cargo.toml ./
+COPY ./runtime/src ./src
 # Copy WASM build crate files
-COPY ./runtime/wasm/build.sh ./runtime/wasm/Cargo.lock ./runtime/wasm/Cargo.toml ./runtime/wasm/
-COPY ./runtime/wasm/src ./runtime/wasm/src
+COPY ./runtime/build.rs ./runtime/wasm/Cargo.lock ./runtime/wasm/Cargo.toml ./wasm/
+COPY ./runtime/wasm/src ./wasm/src
+# FIXME: This throws an error that the env variable "OUT_DIR" is not set, see ./runtime/src/lib.rs#L9
+
+# this container builds the portablegabi-node binary from source files, the runtime library and the WASM file built previously
+FROM parity/rust-builder:latest AS builder
 
 WORKDIR /build
-
-# install clang
-RUN apt-get clean && apt-get -y update && \
-	apt-get install -y --no-install-recommends \
-	openssl \
-	curl \
-	libssl-dev dnsutils \
-	clang
-
-# show backtraces
-ENV RUST_BACKTRACE 1
 
 # to avoid early cache invalidation, we build only dependencies first. For this we create fresh crates we are going to overwrite.
 RUN USER=root cargo init --bin --name=portablegabi-node
@@ -53,15 +35,25 @@ RUN cargo clean --release -p portablegabi-node-runtime
 # copy everything over (cache invalidation will happen here)
 COPY . /build
 # get wasm built in previous step
-COPY --from=builder /runtime/wasm/target/wasm32-unknown-unknown/release ./runtime/wasm/target/wasm32-unknown-unknown/release
+# FIXME: This should probably be used
+# COPY --from=wasm_builder /runtime/wasm/target/ ./runtime/wasm/target/
 # build source again, dependencies are already built
+
 RUN cargo build --release
 
 # test
 RUN cargo test --release -p portablegabi-node-runtime
 
 
+FROM debian:stretch
+
 WORKDIR /runtime
+
+RUN apt-get -y update && \
+	apt-get install -y --no-install-recommends \
+	openssl \
+	curl \
+	libssl-dev dnsutils
 
 # cleanup linux dependencies
 RUN apt-get autoremove -y
@@ -71,7 +63,6 @@ RUN rm -rf /tmp/* /var/tmp/*
 RUN mkdir -p /runtime/target/release/
 COPY --from=builder /build/target/release/portablegabi-node ./target/release/portablegabi-node
 
-RUN chmod a+x *.sh
 RUN ls -la .
 
 # expose node ports

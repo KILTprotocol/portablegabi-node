@@ -1,20 +1,3 @@
-# the WASM build of the runtime is completely indepedent 
-# we can avoid cache invalidations by running it in an extra container
-FROM parity/rust-builder:latest AS wasm_builder
-
-WORKDIR /runtime
-
-# Copy runtime library files
-COPY ./runtime/Cargo.lock ./runtime/Cargo.toml ./
-COPY ./runtime/src ./src
-# Copy WASM build crate files
-COPY ./runtime/build.rs ./runtime/wasm/Cargo.lock ./runtime/wasm/Cargo.toml ./wasm/
-COPY ./runtime/wasm/src ./wasm/src
-
-# FIXME: This throws an error that the env variable "OUT_DIR" is not set, see ./runtime/src/lib.rs#L9
-RUN cargo build --release
-
-# this container builds the portablegabi-node binary from source files, the runtime library and the WASM file built previously
 FROM parity/rust-builder:latest AS builder
 
 WORKDIR /build
@@ -23,6 +6,7 @@ WORKDIR /build
 RUN USER=root cargo init --bin --name=portablegabi-node
 RUN USER=root cargo new --lib --name=portablegabi-node-runtime runtime
 RUN USER=root cargo new --name=portablegabi-node-node node
+
 # overwrite cargo.toml with real files
 COPY Cargo.toml Cargo.lock build.rs ./
 COPY ./runtime/Cargo.toml ./runtime/Cargo.lock ./runtime/
@@ -63,15 +47,13 @@ RUN apt-get clean -y
 RUN rm -rf /tmp/* /var/tmp/*
 
 RUN mkdir -p /runtime/target/release/
-COPY --from=builder /build/target/release/portablegabi-node ./target/release/portablegabi-node
-
-RUN ls -la .
+COPY --from=builder /build/target/release/portablegabi-node /runtime/target/release/portablegabi-node
 
 # expose node ports
 EXPOSE 30333 9933 9944
 
 # add entrypoint
-ENTRYPOINT [ "/target/release/portablegabi-node" ]
+ENTRYPOINT [ "/runtime/target/release/portablegabi-node" ]
 
 # add default commands s.t. you only have to call docker run -p 9944:9944 kiltprotocol/portablegabi-node
 CMD ["--dev", "--ws-port", "9944", "--ws-external"]

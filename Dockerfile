@@ -1,4 +1,4 @@
-FROM parity/rust-builder:latest AS builder
+FROM paritytech/ci-linux:production AS builder
 
 WORKDIR /build
 
@@ -20,16 +20,12 @@ RUN cargo clean --release -p portablegabi-node-runtime
 
 # copy everything over (cache invalidation will happen here)
 COPY . /build
-# get wasm built in previous step
-# FIXME: This should probably be used
-# COPY --from=wasm_builder /runtime/wasm/target/ ./runtime/wasm/target/
-# build source again, dependencies are already built
 
+# build source again, dependencies are already built
 RUN cargo build --release
 
 # test
 RUN cargo test --release -p portablegabi-node-runtime
-
 
 FROM debian:stretch
 

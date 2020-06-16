@@ -1,4 +1,4 @@
-use node_portablegabi_runtime::{
+use portablegabi_node_runtime::{
 	AccountId, AuraConfig, BalancesConfig, GenesisConfig, GrandpaConfig, Signature, SudoConfig,
 	SystemConfig, WASM_BINARY,
 };

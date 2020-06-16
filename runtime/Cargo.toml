@@ -4,7 +4,7 @@ authors = ["KILT <info@kilt.io>"]
 edition = '2018'
 homepage = 'https://kilt.io'
 license = 'Unlicense'
-name = 'node-portablegabi-runtime'
+name = 'portablegabi-node-runtime'
 repository = 'https://github.com/KILTprotocol/portablegabi-node'
 version = '2.0.0-rc3'
 

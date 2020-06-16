@@ -1,6 +1,6 @@
 //! Service and ServiceFactory implementation. Specialized wrapper over substrate service.
 
-use node_portablegabi_runtime::{self, opaque::Block, RuntimeApi};
+use portablegabi_node_runtime::{self, opaque::Block, RuntimeApi};
 use sc_client_api::ExecutorProvider;
 use sc_consensus::LongestChain;
 use sc_executor::native_executor_instance;
@@ -17,8 +17,8 @@ use std::{sync::Arc, time::Duration};
 // Our native executor instance.
 native_executor_instance!(
 	pub Executor,
-	node_portablegabi_runtime::api::dispatch,
-	node_portablegabi_runtime::native_version,
+	portablegabi_node_runtime::api::dispatch,
+	portablegabi_node_runtime::native_version,
 );
 
 /// Starts a `ServiceBuilder` for a full service.
@@ -34,8 +34,8 @@ macro_rules! new_full_start {
 		let inherent_data_providers = sp_inherents::InherentDataProviders::new();
 
 		let builder = sc_service::ServiceBuilder::new_full::<
-			node_portablegabi_runtime::opaque::Block,
-			node_portablegabi_runtime::RuntimeApi,
+			portablegabi_node_runtime::opaque::Block,
+			portablegabi_node_runtime::RuntimeApi,
 			crate::service::Executor,
 		>($config)?
 		.with_select_chain(|_config, backend| Ok(sc_consensus::LongestChain::new(backend.clone())))?

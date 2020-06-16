@@ -1163,7 +1163,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "node-portablegabi-runtime"
+name = "portablegabi-node-runtime"
 version = "0.22.0"
 dependencies = [
  "bitflags 1.0.4 (registry+https://github.com/rust-lang/crates.io-index)",

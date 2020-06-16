@@ -3,21 +3,35 @@
 A new FRAME-based Substrate node, which only contains the [portablegabi-pallet](https://github.com/KILTprotocol/portablegabi-pallet).
 This chains sole purpose is, to store accumulators which hold revocation information for portablegabi-credentials.
 
+## How to use
+
+```bash
+  docker run -d -p 9944:9944 kiltprotocol/portablegabi-node:latest
+```
+
 ## Build
 
-Install Rust:
+### With docker
+
+```
+  docker build -t kiltprotocol/portablegabi .
+```
+
+### Without docker
+
+1. Install Rust:
 
 ```bash
 curl https://sh.rustup.rs -sSf | sh
 ```
 
-Initialize your Wasm Build environment:
+2. Initialize your Wasm Build environment:
 
 ```bash
 ./scripts/init.sh
 ```
 
-Build Wasm and native code:
+3. Build Wasm and native code:
 
 ```bash
 cargo build --release

@@ -18,7 +18,7 @@ jobs:
 
       - name: Build image
         run: |
-          docker build -t kilt/portablegabi-node .
+          docker build -t kiltprotocol/portablegabi-node .
 
       - name: Login to Docker Hub
         env:
@@ -31,8 +31,5 @@ jobs:
         env:
           DOCKER_REPOSITORY: kiltprotocol/portablegabi-node
         run: |
-          IMAGE_TAG=${GITHUB_REF#refs/tags/}
-          docker tag kilt/portablegabi-node $DOCKER_REPOSITORY:latest
-          docker tag kilt/portablegabi-node $DOCKER_REPOSITORY:$IMAGE_TAG
-          docker push $DOCKER_REPOSITORY:$IMAGE_TAG
+          docker tag kiltprotocol/portablegabi-node $DOCKER_REPOSITORY:latest
           docker push $DOCKER_REPOSITORY:latest
